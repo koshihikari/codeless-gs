@@ -346,6 +346,8 @@ a<h2>題</h2>
         console.log(utilF.getValue());
         console.log('utilF.privateMethod()');
 
+        console.log('--------------------');
+
         console.log('utilS');
         console.log(utilS);
         console.log('utilS.getValue()');
@@ -356,4 +358,7 @@ a<h2>題</h2>
         console.log(utilS.getValue());
         console.log('utilS.privateMethod()');
         console.log(utilS.privateMethod());
+        console.log('--------------------');
+        console.log('この行はtest-koshihikariブランチで追加した');
+        console.log('--------------------');
     });
