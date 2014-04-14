@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('util', [])
-    .factory('utilService', function() {
-        var value = 'これはutilServiceの値です';
+angular.module('utilFactory', [])
+    .factory('utilF', function() {
+        var value = 'これはutilFactoryの値です';
         function getValue() {
             return value;
         }

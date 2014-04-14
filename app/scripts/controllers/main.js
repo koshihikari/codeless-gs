@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('self0App', ['util'])
-    .controller('MainCtrl', function ($scope, utilService) {
+angular.module('self0App', ['utilFactory', 'utilService'])
+    .controller('MainCtrl', function ($scope, utilF, utilS) {
         $scope.awesomeThings = [
             'HTML5 Boilerplate',
             'AngularJS',
@@ -336,14 +336,24 @@ a<h2>題</h2>
             }
         }
         // timerId = setInterval(checkMethod, 1000);
-        console.log('utilService');
-        console.log(utilService);
-        console.log('utilService.getValue()');
-        console.log(utilService.getValue());
-        console.log('utilService.setValue("値を更新")');
-        utilService.setValue("値を更新");
-        console.log('utilService.getValue()');
-        console.log(utilService.getValue());
-        console.log('utilService.privateMethod()');
-        console.log(utilService.privateMethod());
+        console.log('utilF');
+        console.log(utilF);
+        console.log('utilF.getValue()');
+        console.log(utilF.getValue());
+        console.log('utilF.setValue("値を更新")');
+        utilF.setValue("値を更新");
+        console.log('utilF.getValue()');
+        console.log(utilF.getValue());
+        console.log('utilF.privateMethod()');
+
+        console.log('utilS');
+        console.log(utilS);
+        console.log('utilS.getValue()');
+        console.log(utilS.getValue());
+        console.log('utilS.setValue("値を更新")');
+        utilS.setValue("値を更新");
+        console.log('utilS.getValue()');
+        console.log(utilS.getValue());
+        console.log('utilS.privateMethod()');
+        console.log(utilS.privateMethod());
     });
