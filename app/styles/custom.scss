@@ -1,0 +1,18 @@
+
+.container {
+	max-width: none;
+}
+.edit-area {
+	.summernote {
+		display: none;
+	}
+	.note-editor {
+		float: left;
+	}
+	.code-view {
+		margin-left: 60px;
+		width: 400px;
+		height: 600px;
+		border: 1px solid #ccc;
+	}
+}
