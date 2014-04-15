@@ -9,7 +9,13 @@ angular.module('codeInsertFactory', [])
         var _wysiwygCode = '';
         var _watcherId = -1;
 
-       function getGSInfo(code) {
+
+        /*
+        * 引数codeにGoogleSpreadsheet埋め込み用コードが含まれていれば、GSのURL、ワークシートのID等を返すメソッド
+        * @param   code:String      GSのコードが埋め込まれているか調べるソースコード
+        * @return  Array            GSのコードが埋め込まれていれば、GSのURL、ワークシートのID等を保持する配列
+        */
+        function getGSInfo(code) {
             // console.log('');
             // console.log('getGSInfo');
             // console.log('------------------');
@@ -19,16 +25,16 @@ angular.module('codeInsertFactory', [])
             if (result !== null) {
                 for (var i=0,len=result.length; i<len; i++) {
                     code.match(/<!--insert_gs\((.+?)\)-->/);
-                    console.log(RegExp.$1);
+                    // console.log(RegExp.$1);
                     tmpArr0 = RegExp.$1.split('?');
-                    console.log("tmpArr0");
-                    console.log(tmpArr0);
+                    // console.log("tmpArr0");
+                    // console.log(tmpArr0);
                     tmpArr1 = tmpArr0[1].split('#gid=');
-                    console.log("tmpArr1");
-                    console.log(tmpArr1);
+                    // console.log("tmpArr1");
+                    // console.log(tmpArr1);
                     tmpArr2 = tmpArr1[0].split('&');
-                    console.log("tmpArr2");
-                    console.log(tmpArr2);
+                    // console.log("tmpArr2");
+                    // console.log(tmpArr2);
                     var tmpObj = {
                         url         : tmpArr0[0],
                         gid         : tmpArr1[1]
@@ -50,15 +56,18 @@ angular.module('codeInsertFactory', [])
             return retArr;
         }
 
+        /*
+        * GoogleSpreadsheetから取得したデータをHTMLのコードに変換するメソッド
+        * @param   data:Object      GoogleSpreadsheetから取得したデータ
+        * @param   gid:String       取得したGoogleSpreadsheetのワークシートのID
+        * @return  String           返還後のHTMLタグ
+        */
         function convertData(data, gid) {
-            console.log('convertData');
-            // var dfd = $.Deferred();
+            // console.log('convertData');
             var row = 0;
-            // var $elem = $('#gs-data');
-            // var dateData = data["seet0"];
             var dateData = data["gid" + gid];
-            console.log('dateData');
-            console.log(dateData);
+            // console.log('dateData');
+            // console.log(dateData);
             if (dateData !== null) {
                 var maxRow = dateData.getNumberOfRows();;
                 var retArr = [];
@@ -73,101 +82,78 @@ angular.module('codeInsertFactory', [])
             } else {
                 return '';
             }
-            // return retArr;
         }
 
-        // codeに_gsData内に保持されているGoogleSpreadsheetから生成したタグを挿入するメソッド
-        function insertGSDataToHTML(code, _gsData) {
+        /*
+        * 引数codeにGoogleSpreadsheetから生成したHTMLのコードを挿入するメソッド
+        * @param   code:String      挿入前のHTMLソース
+        * @param   gsData:Object    GoogleSpreadsheetから取得したデータ
+        * @return  String           挿入後のHTMLソース
+        */
+        function insertGSDataToHTML(code, gsData) {
             var label = '';
-            for (var key in _gsData) {
-                // label = key.split('_')[0];
-                // var re = new RegExp("<!--insert_gs\\(" + label + "\\)-->");
-                // var re = new RegExp("<!--insert_gs\\(" + key + "\\)-->");
-                console.log('------------------');
-                console.log('key');
-                console.log(key);
+            for (var key in gsData) {
+                // console.log('------------------');
+                // console.log('key');
+                // console.log(key);
                 var tmpKey = key.replace(/\//g, '\\/');
                 tmpKey = tmpKey.replace(/\?/g, '\\?');
-                console.log('tmpKey');
-                console.log(tmpKey);
+                // console.log('tmpKey');
+                // console.log(tmpKey);
                 var re = new RegExp("<!--insert_gs\\((" + tmpKey + ")\\)-->");
-                console.log('re');
-                console.log(re);
-                console.log('------------------');
-                // var re = new RegExp("<!--insert_gs\\((" + tmpKey + ")\\)-->");
-                // var re = new RegExp("<!--insert_gs\\(" + tmpKey + "\\)-->");
-                // var re = new RegExp("<!--insert_gs\\(" + key.replace(/[\/|\?]/g, ['\\/', '\\?']) + "\\|)-->");
-                code = code.replace(re, '<!--insert_gs_bigin(' + "$1" + ')-->' + _gsData[key]['source'] + '<!--insert_gs_end-->');
-                // code = code.replace(re, '<!--insert_gs_bigin\\(' + "$1" + '\\)-->' + _gsData[key]['source'] + '<!--insert_gs_end-->');
-                // code = code.replace(re, _gsData[key]);
+                // console.log('re');
+                // console.log(re);
+                // console.log('------------------');
+                code = code.replace(re, '<!--insert_gs_bigin(' + "$1" + ')-->' + gsData[key]['source'] + '<!--insert_gs_end-->');
             }
             return code;
         }
 
-        // コードの内容でWYSIWYGエディタを更新する
+        /*
+        * 引数codeの内容でWYSIWYGエディタを更新するメソッド
+        * @param   code:String      HTMLソース(GoogleSpreadsheetのデータ展開前のソース)
+        * @return  void
+        */
         function refreshWysiwygFromCode(code) {
-            // 前回更新したコードと引数codeに渡されたコードを比較して、内容が変わっていれば下記の処理を行う
-            // コード表示エリアにコードを挿入する
-            // WYSIWYGエディタに挿入するコードからGoogle Spreadsheetのキーを取得する
-            var gsInfo = getGSInfo(code);
-            console.log(gsInfo);
+            var gsInfo = getGSInfo(code);   // WYSIWYGエディタに挿入するコードからGoogle Spreadsheetのキーを取得する
+            // console.log(gsInfo);
 
             // Google Spreadsheetのキーが見つかった場合、下記の処理を行う
             if (0 < gsInfo.length) {
                 var counter = 0, complete = gsInfo.length;
                 // console.log(window.getGSData);
                 // console.log($(window));
-                /*
-                var refresh = function() {
-                    // 整形したデータをWYSIWYGエディタに挿入するコードに挿入
-                    $scope.__wysiwygCode = $scope.insertGSDataToHTML(code, $scope._gsData);
-                    $scope.code = code;
-                    console.log('置換済みコード');
-                    console.log($scope._wysiwygCode);
-                    // WYSIWYGエディタにコードを挿入する
-                    $('.summernote').code($scope._wysiwygCode);
-                    $('.code-view').val(code);
-                }
-                */
                 $(window).off('onCompleteRequestData');
                 $(window).on('onCompleteRequestData', function(event, data) {
                     console.log('gsデータ受け取り完了');
                     // console.log(data);
                     // console.log($scope.code);
-                    // Google Spreadsheetから取得したデータをHTMLに変換して保持
-                    // $scope._gsData[data['key'] + '_' + data['gid']] = $scope.convertData(data['data'], data['gid']);
-                    // https://docs.google.com/spreadsheet/ccc?key=0AtvxJEe7IC7ndGk4Z2ZiazdZV1hZNHpDVzhsZlo3S1E&usp=drive_web#gid=0
                     var key = 'https://docs.google.com/spreadsheet/ccc?key=' + data.key + '&usp=drive_web#gid=' + data.gid;
                     _gsData[key] = {
                         'source'    : convertData(data['data'], data['gid']),
                         'master'    : data
                     };
                     counter ++;
-                    console.log('counter = ' + counter + ', complete = ' + complete);
+                    // console.log('counter = ' + counter + ', complete = ' + complete);
                     // $scope._gsData[key] = $scope.convertData(data['data'], data['gid']);
                     // if (++counter === complete) {
                     if (counter === complete) {
                         $(window).off('onCompleteRequestData');
-                        console.log('全データ取得完了');
-                        console.log(_gsData);
-                        // 整形したデータをWYSIWYGエディタに挿入するコードに挿入
-                        // $scope._wysiwygCode = $scope.insertGSDataToHTML(code, $scope._gsData);
-                        // $scope.code = code;
+                        // console.log('全データ取得完了');
+                        // console.log(_gsData);
                         $scope.$apply(function() {
                             _wysiwygCode = insertGSDataToHTML(code, _gsData);
                             _code = code;
                         });
                         console.log('置換済みコード');
                         console.log(_wysiwygCode);
-                        // WYSIWYGエディタにコードを挿入する
-                        $('.summernote').code(_wysiwygCode);
-                        $('.code-view').val(_code);
+                        $('.summernote').code(_wysiwygCode);    // WYSIWYGエディタにコードを挿入する
+                        $('.code-view').val(_code);             // ソース絵dェイたにコードを挿入する
 
                         if (_watcherId !== -1) {
                             clearInterval(_watcherId);
                         }
                         _watcherId = setInterval(watchWysiwyg, 500);
-                        // refresh();
                     } else {
                         console.log('あと' + (complete - counter) + '回');
                     }
@@ -189,24 +175,34 @@ angular.module('codeInsertFactory', [])
             }
         }
 
-        // codeからGoogleSpreadsheetから生成したタグを取り除くメソッド
+        /*
+        * 引数codeからGoogleSpreadsheetから生成したHTMLのコードを取り除くメソッド
+        * @param   code:String      GoogleSpreadsheetから生成したコードが挿入済みのHTMLソース
+        * @return  String           GoogleSpreadsheetから生成したコードを挿入前の状態に戻したHTMLソース
+        */
         function removeGSDataFromHTML(code) {
             var result = code.match(/<!--insert_gs_bigin((.+)?)-->(.+?)<!--insert_gs_end-->/g);
-            console.log('-------------');
-            console.log('result');
-            console.log(result);
-            console.log();
-            console.log('$1');
-            console.log(RegExp.$1);
-            console.log();
-            console.log('$2');
-            console.log(RegExp.$2);
+            // console.log('-------------');
+            // console.log('result');
+            // console.log(result);
+            // console.log();
+            // console.log('$1');
+            // console.log(RegExp.$1);
+            // console.log();
+            // console.log('$2');
+            // console.log(RegExp.$2);
             code = code.replace(/<!--insert_gs_bigin((.+?))-->(.+?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
-            console.log('code');
-            console.log(code);
-            console.log('-------------');
+            // console.log('code');
+            // console.log(code);
+            // console.log('-------------');
             return code;
         }
+
+        /*
+        * WYSIWYGエディタの内容が更新されたかチェックするメソッド
+        * @param   void
+        * @return  void
+        */
         function watchWysiwyg() {
             // console.log('wysiwygチェック');
             if (_wysiwygCode !== $('.summernote').code()) {
@@ -214,29 +210,41 @@ angular.module('codeInsertFactory', [])
                 refreshCodeFromWysiwyg($(".summernote").code());
             }
         }
-        // Wysiwygから取得したコードでCodeを更新する
+
+        /*
+        * 引数codeの内容でソースエディタを更新するメソッド
+        * @param   code:String      HTMLソース(GoogleSpreadsheetのデータ挿入済みのソース)
+        * @return  void
+        */
         function refreshCodeFromWysiwyg(code) {
-            console.log('');
+            // console.log('');
             console.log('--------------');
             console.log(code);
-            console.log('--------------');
-            // コード内のGoogleSpreadsheet挿入タグを置換する
-            _code = removeGSDataFromHTML(code);
+            // console.log('--------------');
+            _code = removeGSDataFromHTML(code);     // コード内のGoogleSpreadsheet挿入タグを置換する
             console.log(_code);
             console.log('--------------');
-            console.log('Codeの値を更新');
-            // 置換したコードでCodeを更新する
-            $('.code-view').val(_code);
+            // console.log('Codeの値を更新');
+            refreshWysiwygFromCode(_code);
+            // $('.summernote').code(_wysiwygCode);
+            /*
+            // $('.code-view').val(_code);             // 置換したコードでソースエディタを更新する
             // $scope._wysiwygCode = code;;
-                        $scope.$apply(function() {
-                            _wysiwygCode = code;
-                        });
-
+            $scope.$apply(function() {
+                _wysiwygCode = code;
+            });
             if (_watcherId !== -1) {
                 clearInterval(_watcherId);
             }
             _watcherId = setInterval(watchWysiwyg, 500);
+            */
         }
+
+        /*
+        * 引数codeの内容でソースエディタを更新するメソッド
+        * @param   code:String      HTMLソース(GoogleSpreadsheetのデータ挿入済みのソース)
+        * @return  void
+        */
         function checkMethod() {
             if (window.getGSData) {
                 console.log('getGSDataは定義済み');
@@ -271,7 +279,7 @@ angular.module('codeInsertFactory', [])
                     // console.log('$scope.code');
                     // console.log($scope.code);
                     if ($(this).val() !== _code) {
-                        console.log('codeのコードが変わった');
+                        console.log('ソースエディタのコードが変わった');
                         refreshWysiwygFromCode($(this).val());
                     }
                 });
@@ -284,7 +292,6 @@ angular.module('codeInsertFactory', [])
             $scope = scope;
             _code = code;
             _timerId = setInterval(checkMethod, 1000);
-                console.log('よし :: _timerId = ' + _timerId);
         }
         return {
             execute    : execute

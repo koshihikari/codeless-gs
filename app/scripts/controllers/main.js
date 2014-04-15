@@ -2,11 +2,11 @@
 
 angular.module('self0App', ['codeInsertFactory'])
     .controller('MainCtrl', function ($scope, codeInsertFactory) {
-        $scope.awesomeThings = [
-            'HTML5 Boilerplate',
-            'AngularJS',
-            'Karma'
-        ];
+        // $scope.awesomeThings = [
+        //     'HTML5 Boilerplate',
+        //     'AngularJS',
+        //     'Karma'
+        // ];
         // $scope.isFirst = true;
         // var aaa = '<h2>題</h2><p>これはサンプル<br />なにか<br />あるかな</p><!-- ここにGS挿入 --><p>これはサンプル<!-- コメント --><br />なにか<br />あるかな</p><!-- ここにGS挿入 -->';
         // var aaa = '<h2>題</h2>\n    <p>これはサンプル<br />なにか<br />あるかな</p><!--insert_gs(0AtvxJEe7IC7ndFNfbjhXZnIwQnVNOGFraFVGOEtUaHc)--><p>これはサンプル<br />なにか<br />あるかな</p><!--insert_gs(0AtvxJEe7IC7ndGk4Z2ZiazdZV1hZNHpDVzhsZlo3S1E)-->';
