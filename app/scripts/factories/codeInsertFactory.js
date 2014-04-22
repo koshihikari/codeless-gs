@@ -7,7 +7,7 @@ angular.module('codeInsertFactory', [])
         var _code = '';
         var _gsData = {};
         var _wysiwygCode = '';
-        var _watcherId = -1;
+        // var _watcherId = -1;
 
 
         /*
@@ -125,7 +125,7 @@ angular.module('codeInsertFactory', [])
                 // console.log($(window));
                 $(window).off('onCompleteRequestData');
                 $(window).on('onCompleteRequestData', function(event, data) {
-                    console.log('gsデータ受け取り完了');
+                    // console.log('gsデータ受け取り完了');
                     // console.log(data);
                     // console.log($scope.code);
                     var key = 'https://docs.google.com/spreadsheet/ccc?key=' + data.key + '&usp=drive_web#gid=' + data.gid;
@@ -145,27 +145,27 @@ angular.module('codeInsertFactory', [])
                             _wysiwygCode = insertGSDataToHTML(code, _gsData);
                             _code = code;
                         });
-                        console.log('置換済みコード');
-                        console.log(_wysiwygCode);
+                        // console.log('置換済みコード');
+                        // console.log(_wysiwygCode);
                         $('.summernote').code(_wysiwygCode);    // WYSIWYGエディタにコードを挿入する
-                        $('.code-view').val(_code);             // ソース絵dェイたにコードを挿入する
+                        $('.code-view').val(_code);             // 置換したコードでソースエディタを更新する
 
-                        if (_watcherId !== -1) {
-                            clearInterval(_watcherId);
-                        }
-                        _watcherId = setInterval(watchWysiwyg, 500);
+                        // if (_watcherId !== -1) {
+                        //     clearInterval(_watcherId);
+                        // }
+                        // _watcherId = setInterval(watchWysiwyg, 500);
                     } else {
-                        console.log('あと' + (complete - counter) + '回');
+                        // console.log('あと' + (complete - counter) + '回');
                     }
                 });
                 for (var i=0; i<complete; i++) {
                     var key = 'https://docs.google.com/spreadsheet/ccc?key=' + gsInfo[i].key + '&usp=drive_web#gid=' + gsInfo[i].gid;
                     // $scope._gsData[key] = $scope.convertData(data['data'], data['gid']);
                     if (_gsData[key]) {
-                        console.log('キャッシュ済み');
+                        // console.log('キャッシュ済み');
                         $(window).trigger('onCompleteRequestData', _gsData[key].master);
                     } else {
-                        console.log('キャッシュにないので取得する');
+                        // console.log('キャッシュにないので取得する');
                         window.getGSData(gsInfo[i].key, gsInfo[i].gid);
                     }
                     // window.getGSData(gsInfo[i].key, 0);
@@ -181,20 +181,27 @@ angular.module('codeInsertFactory', [])
         * @return  String           GoogleSpreadsheetから生成したコードを挿入前の状態に戻したHTMLソース
         */
         function removeGSDataFromHTML(code) {
-            var result = code.match(/<!--insert_gs_bigin((.+)?)-->(.+?)<!--insert_gs_end-->/g);
-            // console.log('-------------');
-            // console.log('result');
-            // console.log(result);
-            // console.log();
-            // console.log('$1');
-            // console.log(RegExp.$1);
-            // console.log();
-            // console.log('$2');
-            // console.log(RegExp.$2);
-            code = code.replace(/<!--insert_gs_bigin((.+?))-->(.+?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
-            // console.log('code');
-            // console.log(code);
-            // console.log('-------------');
+            // var result = code.match(/<!--insert_gs_bigin((.+)?)-->(.+?)<!--insert_gs_end-->/g);
+            // while (1) {
+                var result = code.match(/<!--insert_gs_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g);
+                // console.log('-------------');
+                // console.log('result');
+                // console.log(result);
+                // console.log();
+                // console.log('$1');
+                // console.log(RegExp.$1);
+                // console.log();
+                // console.log('$2');
+                // console.log(RegExp.$2);
+                // if (result === null) {
+                //     break;
+                // }
+                // code = code.replace(/<!--insert_gs_bigin((.+?))-->(.+?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
+                code = code.replace(/<!--insert_gs_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
+                // console.log('code');
+                // console.log(code);
+                // console.log('-------------');
+            // }
             return code;
         }
 
@@ -203,32 +210,34 @@ angular.module('codeInsertFactory', [])
         * @param   void
         * @return  void
         */
-        function watchWysiwyg() {
-            // console.log('wysiwygチェック');
-            if (_wysiwygCode !== $('.summernote').code()) {
-                console.log('更新されている');
-                refreshCodeFromWysiwyg($(".summernote").code());
-            }
-        }
+        // function watchWysiwyg() {
+        //     // console.log('wysiwygチェック');
+        //     if (_wysiwygCode !== $('.summernote').code()) {
+        //         console.log('更新されている');
+        //         refreshCodeFromWysiwyg($(".summernote").code(), false);
+        //     }
+        // }
 
         /*
         * 引数codeの内容でソースエディタを更新するメソッド
         * @param   code:String      HTMLソース(GoogleSpreadsheetのデータ挿入済みのソース)
         * @return  void
         */
-        function refreshCodeFromWysiwyg(code) {
+        function refreshCodeFromWysiwyg(code, isWyiswygRefresh) {
             // console.log('');
-            console.log('--------------');
-            console.log(code);
+            // console.log('--------------');
+            // console.log(code);
             // console.log('--------------');
             _code = removeGSDataFromHTML(code);     // コード内のGoogleSpreadsheet挿入タグを置換する
-            console.log(_code);
-            console.log('--------------');
+            // console.log(_code);
+            // console.log('--------------');
             // console.log('Codeの値を更新');
-            refreshWysiwygFromCode(_code);
+            if (isWyiswygRefresh === true) {
+                refreshWysiwygFromCode(_code);
+            }
             // $('.summernote').code(_wysiwygCode);
+            $('.code-view').val(_code);             // 置換したコードでソースエディタを更新する
             /*
-            // $('.code-view').val(_code);             // 置換したコードでソースエディタを更新する
             // $scope._wysiwygCode = code;;
             $scope.$apply(function() {
                 _wysiwygCode = code;
@@ -247,7 +256,7 @@ angular.module('codeInsertFactory', [])
         */
         function checkMethod() {
             if (window.getGSData) {
-                console.log('getGSDataは定義済み');
+                // console.log('getGSDataは定義済み');
                 clearInterval(_timerId);
                 $('.summernote').summernote({
                     width: 640,
@@ -265,12 +274,16 @@ angular.module('codeInsertFactory', [])
                         // console.log('$(".summernote").code()');
                         // console.log($('.summernote').code());
                         if (_wysiwygCode !== $('.summernote').code()) {
-                            console.log('wysiwygの値が変わった');
-                            refreshCodeFromWysiwyg($(".summernote").code());
+                            // console.log('wysiwygの値が変わった');
+                            refreshCodeFromWysiwyg($(".summernote").code(), false);
                         }
                     },
                     onblur: function(event) {
                         // console.log('ブラー');
+                        if (_wysiwygCode !== $('.summernote').code()) {
+                            // console.log('wysiwygの値が変わった');
+                            refreshCodeFromWysiwyg($(".summernote").code(), true);
+                        }
                     }
                 });
                 $('.code-view').on('keyup', function(event) {
@@ -279,13 +292,13 @@ angular.module('codeInsertFactory', [])
                     // console.log('$scope.code');
                     // console.log($scope.code);
                     if ($(this).val() !== _code) {
-                        console.log('ソースエディタのコードが変わった');
+                        // console.log('ソースエディタのコードが変わった');
                         refreshWysiwygFromCode($(this).val());
                     }
                 });
                 refreshWysiwygFromCode(_code);
             } else {
-                console.log('まだgetGSDataは未定義');
+                // console.log('まだgetGSDataは未定義');
             }
         }
         function execute(scope, code) {
