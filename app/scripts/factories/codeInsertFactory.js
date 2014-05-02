@@ -234,6 +234,8 @@ angular.module('codeInsertFactory', [])
             // console.log('Codeの値を更新');
             if (isWyiswygRefresh === true) {
                 refreshWysiwygFromCode(_code);
+            } else {
+                _wysiwygCode = code;
             }
             // $('.summernote').code(_wysiwygCode);
             $('.code-view').val(_code);             // 置換したコードでソースエディタを更新する
@@ -274,7 +276,7 @@ angular.module('codeInsertFactory', [])
                         // console.log('$(".summernote").code()');
                         // console.log($('.summernote').code());
                         if (_wysiwygCode !== $('.summernote').code()) {
-                            // console.log('wysiwygの値が変わった');
+                            console.log('wysiwygの値が変わった');
                             refreshCodeFromWysiwyg($(".summernote").code(), false);
                         }
                     },
