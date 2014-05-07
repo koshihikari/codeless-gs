@@ -17,10 +17,52 @@ angular.module('codeInsertFactory', [])
         function getGSInfo(code) {
             var retArr = [], tmpArr0 = [], tmpArr1 = [], tmpArr2 = [], tmpArr3 = [];
             var info = '';
-            var result = code.match(/<!--insert_gs\(.+?\)-->/g);
+            var result = code.match(/<!--insert_gs_to_(.+)\(.+?\)-->/g);
+            // var result = code.match(/<!--insert_gs\(.+?\)-->/g);
             if (result !== null) {
                 for (var i=0,len=result.length; i<len; i++) {
-                    code.match(/<!--insert_gs\((.+?)\)-->/);
+                    code.match(/<!--insert_gs_to_(.+)\((.+?)\)-->/);
+                    // code.match(/<!--insert_gs\((.+?)\)-->/);
+                    console.log(RegExp.$1);
+                    tmpArr0 = RegExp.$2.split('?');
+                    console.log("tmpArr0");
+                    console.log(tmpArr0);
+                    tmpArr1 = tmpArr0[1].split('#gid=');
+                    console.log("tmpArr1");
+                    console.log(tmpArr1);
+                    tmpArr2 = tmpArr1[0].split('&');
+                    console.log("tmpArr2");
+                    console.log(tmpArr2);
+                    var tmpObj = {
+                        pageType    : RegExp.$1,
+                        url         : tmpArr0[0],
+                        gid         : tmpArr1[1]
+                    };
+                    console.log("tmpObj");
+                    console.log(tmpObj);
+                    for (var j=0, len2=tmpArr2.length; j<len2; j++) {
+                        tmpArr3 = tmpArr2[j].split('=');
+                        tmpObj[tmpArr3[0]] = tmpArr3[1];
+                    }
+                    if (tmpObj) {
+                        retArr.push(tmpObj);
+                    }
+                    code = code.replace(/<!--insert_gs_to_(.+)\((.+?)\)-->/, "$1");
+                    // code = code.replace(/<!--insert_gs\((.+?)\)-->/, "$1");
+                }
+            }
+            return retArr;
+        }
+        /*
+        function getGSInfo(code) {
+            var retArr = [], tmpArr0 = [], tmpArr1 = [], tmpArr2 = [], tmpArr3 = [];
+            var info = '';
+            var result = code.match(/<!--insert_gs_to_about\(.+?\)-->/g);
+            // var result = code.match(/<!--insert_gs\(.+?\)-->/g);
+            if (result !== null) {
+                for (var i=0,len=result.length; i<len; i++) {
+                    code.match(/<!--insert_gs_to_about\((.+?)\)-->/);
+                    // code.match(/<!--insert_gs\((.+?)\)-->/);
                     // console.log(RegExp.$1);
                     tmpArr0 = RegExp.$1.split('?');
                     // console.log("tmpArr0");
@@ -42,11 +84,13 @@ angular.module('codeInsertFactory', [])
                     if (tmpObj) {
                         retArr.push(tmpObj);
                     }
-                    code = code.replace(/<!--insert_gs\((.+?)\)-->/, "$1");
+                    code = code.replace(/<!--insert_gs_to_about\((.+?)\)-->/, "$1");
+                    // code = code.replace(/<!--insert_gs\((.+?)\)-->/, "$1");
                 }
             }
             return retArr;
         }
+        */
 
         /*
         * GoogleSpreadsheetから取得したデータをHTMLのコードに変換するメソッド
@@ -60,7 +104,7 @@ angular.module('codeInsertFactory', [])
             if (dateData !== null) {
                 var maxRow = dateData.getNumberOfRows();;
                 var retArr = [];
-                for (row = 0; row < maxRow; row++) {
+                for (row = 1; row < maxRow; row++) {
                     var tmpArr = [dateData.getValue(row, 0), dateData.getValue(row, 1)];
                     retArr.push('<tr><td class="key">' + dateData.getValue(row, 0) + '</td><td class="val">' + dateData.getValue(row, 1) + '</td></tr>');
                 }
@@ -86,11 +130,13 @@ angular.module('codeInsertFactory', [])
                 tmpKey = tmpKey.replace(/\?/g, '\\?');
                 // console.log('tmpKey');
                 // console.log(tmpKey);
-                var re = new RegExp("<!--insert_gs\\((" + tmpKey + ")\\)-->");
+                var re = new RegExp("<!--insert_gs_to_about\\((" + tmpKey + ")\\)-->");
+                // var re = new RegExp("<!--insert_gs\\((" + tmpKey + ")\\)-->");
                 // console.log('re');
                 // console.log(re);
                 // console.log('------------------');
-                code = code.replace(re, '<!--insert_gs_bigin(' + "$1" + ')-->' + gsData[key]['source'] + '<!--insert_gs_end-->');
+                code = code.replace(re, '<!--insert_gs_to_about_bigin(' + "$1" + ')-->' + gsData[key]['source'] + '<!--insert_gs_end-->');
+                // code = code.replace(re, '<!--insert_gs_bigin(' + "$1" + ')-->' + gsData[key]['source'] + '<!--insert_gs_end-->');
             }
             return code;
         }
@@ -140,7 +186,24 @@ angular.module('codeInsertFactory', [])
         * @return  String           GoogleSpreadsheetから生成したコードを挿入前の状態に戻したHTMLソース
         */
         function removeGSDataFromHTML(code) {
-            var result = code.match(/<!--insert_gs_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g);
+            var result = code.match(/<!--insert_gs_to_(.+)_bigin\((.*?)\)-->([\s\S]*?)<!--insert_gs_end-->/g);
+            // var result = code.match(/<!--insert_gs_bigin(.+)\((.*?)\)-->([\s\S]*?)<!--insert_gs_end-->/g);
+            console.log('-------------');
+            console.log('code');
+            console.log(code);
+            console.log('result');
+            console.log(result);
+            console.log();
+            console.log('$1');
+            console.log(RegExp.$1);
+            console.log();
+            console.log('$2');
+            console.log(RegExp.$2);
+            console.log();
+            console.log('$3');
+            console.log(RegExp.$3);
+            var result = code.match(/<!--insert_gs_to_about_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g);
+            // var result = code.match(/<!--insert_gs_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g);
             // console.log('-------------');
             // console.log('result');
             // console.log(result);
@@ -151,7 +214,8 @@ angular.module('codeInsertFactory', [])
             // console.log('$2');
             // console.log(RegExp.$2);
             // code = code.replace(/<!--insert_gs_bigin((.+?))-->(.+?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
-            code = code.replace(/<!--insert_gs_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
+            code = code.replace(/<!--insert_gs_to_about_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
+            // code = code.replace(/<!--insert_gs_bigin((.*?))-->([\s\S]*?)<!--insert_gs_end-->/g, ("<!--insert_gs" + "$1".replace('\\', '') + "-->"));
             // console.log('code');
             // console.log(code);
             // console.log('-------------');
@@ -190,7 +254,7 @@ angular.module('codeInsertFactory', [])
                 clearInterval(_timerId);
                 $('.summernote').summernote({
                     width: 640,
-                    height: 320,                  // set editable area's height
+                    height: 592,                  // set editable area's height
                     focus: true,                  // set focus editable area after summernote loaded
                     tabsize: 2,                   // size of tab
                     disableDragAndDrop: false, // disable drag and drop event

@@ -1,8 +1,15 @@
+@import "compass";
 
 .container {
 	max-width: none;
 }
 .edit-area {
+	>.btn-group {
+		display: none;
+	}
+	.note-toolbar {
+		display: none;
+	}
 	.summernote {
 		display: none;
 	}
@@ -14,5 +21,86 @@
 		width: 400px;
 		height: 600px;
 		border: 1px solid #ccc;
+	}
+}
+
+.note-editable {
+	padding: 0 !important;
+	>h2 {
+		background-color: rgb(161, 196, 215);
+		border: 0px solid rgb(202, 202, 202);
+		padding: 10px;
+		margin: 0 auto;
+		color: rgb(255, 255, 255);
+		font-size: 12px;
+		line-height: 14px;
+		font-weight: bold;
+		text-shadow: rgb(204, 204, 204) 0px 1px 0px;
+		text-align: center;
+	}
+	>h3 {
+		color: rgb(0, 0, 0);
+		font-size: 14px;
+		line-height: 14px;
+		font-weight: normal;
+		font-style: normal;
+		text-decoration: none;
+		text-shadow: rgb(255, 255, 255) 0px 1px 1px;
+		text-align: left;
+		margin: 0px auto;
+		background-color: rgb(255, 255, 255);
+		// background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(255, 255, 255, 0.2)), to(rgba(0, 0, 0, 0.2)/));
+		@include background-image(linear-gradient(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)));
+		background-color: rgb(255, 255, 255);
+		padding: 10px;
+	}
+	div.about-wrapper {
+		margin: 0 5px;
+	table {
+		width: 100%;
+		border-collapse: separate;
+		// margin: 15px 5px;
+		td {
+			&.key {
+				width: 100px;
+				background-color: rgb(233, 233, 233);
+				text-align: left;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				border-bottom-right-radius: 0px;
+				border-bottom-left-radius: 0px;
+				border: 1px solid rgb(204, 204, 204);
+				margin: 0px auto;
+				padding: 3px;
+			}
+			&.val {
+				width: auto;
+				background-color: transparent;
+				text-align: left;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				border-bottom-right-radius: 0px;
+				border-bottom-left-radius: 0px;
+				border: 1px solid rgb(204, 204, 204);
+				margin: 0px auto;
+				padding: 3px;
+			}
+		}
+	}
+	}
+	>div.detail {
+		color: rgb(0, 0, 0);
+		font-size: 12px;
+		line-height: 14px;
+		font-weight: normal;
+		font-style: normal;
+		text-decoration: none;
+		text-align: left;
+		margin: 15px 5px;
+		background-color: transparent;
+		padding: 0px;
+		p {
+			margin: 0;
+		}
 	}
 }
